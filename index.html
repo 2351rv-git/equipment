@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>의료기기 일상점검 관리 대장</title>
+  <!-- Google Fonts: Noto Sans KR, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Firebase SDK v8 (Compat) CDNs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- App Shell -->
+  <div class="app-container">
+    
+    <!-- Screen-only Header & Controls (Hidden in Print) -->
+    <header class="no-print screen-header">
+      <div class="header-logo">
+        <i data-lucide="activity" class="logo-icon"></i>
+        <h1>의료기기 일상점검 시스템</h1>
+        <!-- 스토리지 동기화 상태 뱃지 -->
+        <span id="sync-status" class="status-badge local"><i data-lucide="database"></i> 로컬 저장 모드</span>
+      </div>
+      <div class="header-actions">
+        <button id="theme-toggle" class="btn btn-icon" title="테마 변경">
+          <i data-lucide="sun" class="theme-icon-light"></i>
+          <i data-lucide="moon" class="theme-icon-dark"></i>
+        </button>
+        <button id="pdf-btn" class="btn btn-outline" title="PDF 파일로 저장하기 (인쇄 창에서 'PDF로 저장' 선택)">
+          <i data-lucide="file-text"></i> PDF로 저장
+        </button>
+        <button id="print-btn" class="btn btn-primary" title="전체 페이지 인쇄하기 (A4 가로 최적화)">
+          <i data-lucide="printer"></i> 대장 인쇄하기
+        </button>
+      </div>
+    </header>
+
+    <!-- Interactive Dashboard Control Panel (Hidden in Print) -->
+    <section class="no-print control-panel card">
+      <div class="control-row">
+        <!-- Date Selector -->
+        <div class="control-group">
+          <label for="select-year"><i data-lucide="calendar"></i> 점검 년/월 선택</label>
+          <div class="date-selector">
+            <select id="select-year"></select>
+            <span>년</span>
+            <select id="select-month"></select>
+            <span>월</span>
+          </div>
+        </div>
+
+
+        <!-- Scroll Quick Navigation (Helps user jump directly to a page) -->
+        <div class="control-group">
+          <label for="quick-page-select"><i data-lucide="compass"></i> 페이지 바로가기 (스크롤 이동)</label>
+          <select id="quick-page-select" class="select-page-dropdown">
+            <option value="">페이지 선택...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Batch Fill Toolbar (Includes target page selection) -->
+      <div class="batch-toolbar">
+        <div class="batch-tools-left">
+          <span class="batch-title"><i data-lucide="sparkles"></i> 빠른 입력 도구:</span>
+          
+          <select id="batch-page-select" class="select-xs" style="font-weight: 600; border-color: var(--accent-color);">
+            <option value="">적용 대상 페이지...</option>
+          </select>
+          
+          <div class="batch-divider"></div>
+          
+          <button id="batch-fill-today" class="btn btn-xs btn-outline-primary">오늘 일자 모두 적합(V)</button>
+          
+          <div class="batch-divider"></div>
+          
+          <select id="batch-day-select" class="select-xs">
+            <option value="">일자 선택...</option>
+          </select>
+          <button id="batch-fill-day-btn" class="btn btn-xs btn-secondary">선택 일자 모두 적합(V)</button>
+          
+          <div class="batch-divider"></div>
+          
+          <select id="batch-equip-select" class="select-xs">
+            <option value="">기기 선택...</option>
+          </select>
+          <button id="batch-fill-equip-btn" class="btn btn-xs btn-secondary">선택 기기 한 달 모두 적합(V)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Container where all sheets are stacked vertically -->
+    <main id="pages-container" class="pages-list-container">
+      <!-- Generated dynamically in JS -->
+    </main>
+
+    <!-- Large 'Add Page' button at the bottom of the list (Hidden in Print) -->
+    <div class="add-page-footer-section no-print">
+      <button id="add-page-btn-large" class="btn btn-primary">
+        <i data-lucide="plus-circle"></i> 새 점검 페이지 추가
+      </button>
+    </div>
+
+  </div> <!-- /app-container -->
+
+  <!-- Equipment Management Modal (Hidden by default, Screen-only) -->
+  <div id="equip-modal" class="modal-overlay no-print">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i data-lucide="edit-3"></i> 기기 목록 편집 (<span id="modal-page-title">페이지 1</span>)</h2>
+        <button class="modal-close" id="close-equip-modal"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-tip">해당 페이지의 의료기기 목록을 편집합니다. 1번부터 15번까지의 고정된 입력창에 의료기기 이름을 입력하고 '확인 및 적용'을 누르면 저장됩니다. 비어있는 칸은 점검표에 빈 행으로 표시됩니다.</p>
+        
+        <!-- 15 fixed text inputs form -->
+        <div class="equip-grid-form" id="equip-inputs-container">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="reset-equip-btn" class="btn btn-outline-danger">전체 입력 지우기</button>
+        <button id="save-equip-btn" class="btn btn-primary">확인 및 적용</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cell Dropdown Menu Selector (Triggered on cell click) -->
+  <div id="cell-dropdown-menu" class="cell-dropdown no-print" style="display: none;">
+    <div class="dropdown-item val-v" data-val="V"><i data-lucide="check"></i> V (적합)</div>
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-item val-code" data-val="①">① 작동상태</div>
+    <div class="dropdown-item val-code" data-val="②">② 알람점검</div>
+    <div class="dropdown-item val-code" data-val="③">③ 케이블 상태</div>
+    <div class="dropdown-item val-code" data-val="④">④ 외관상태</div>
+    <div class="dropdown-item val-code" data-val="⑤">⑤ 청결 상태</div>
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-custom-row">
+      <input type="text" id="dropdown-custom-input" placeholder="직접 입력..." onclick="event.stopPropagation()">
+      <button id="dropdown-custom-save" class="btn btn-primary">입력</button>
+    </div>
+    <div class="dropdown-divider"></div>
+    <div class="dropdown-item val-clear" data-val=""><i data-lucide="eraser"></i> 지우기</div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

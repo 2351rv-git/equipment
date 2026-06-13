@@ -45,9 +45,9 @@ let state = {
     {
       id: DEFAULT_PAGE_ID,
       name: "페이지 1",
-      department: "소아과",
+      department: "",
       inspector: "",
-      equipment: [...DEFAULT_EQUIPMENT]
+      equipment: sanitizeEquipmentList([])
     }
   ],
   // 구조: { '2026-6': { 'pageId': { 'equipIndex': { 'day': 'value' } } } }

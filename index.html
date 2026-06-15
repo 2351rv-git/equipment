@@ -32,6 +32,13 @@
         <span id="sync-status" class="status-badge local"><i data-lucide="database"></i> 로컬 저장 모드</span>
       </div>
       <div class="header-actions">
+        <button id="export-btn" class="btn btn-outline" title="데이터 백업 파일 내보내기">
+          <i data-lucide="download"></i> 백업 내보내기
+        </button>
+        <button id="import-btn" class="btn btn-outline" title="백업 파일에서 데이터 복원">
+          <i data-lucide="upload"></i> 백업 가져오기
+        </button>
+        <input type="file" id="import-file-input" accept=".json" style="display: none;">
         <button id="theme-toggle" class="btn btn-icon" title="테마 변경">
           <i data-lucide="sun" class="theme-icon-light"></i>
           <i data-lucide="moon" class="theme-icon-dark"></i>

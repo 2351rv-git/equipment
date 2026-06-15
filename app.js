@@ -1214,12 +1214,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("batch-reset-month-btn").addEventListener("click", clearAllPagesMonthData);
 
   // 9. 상단 공통 동작 단추들
-  document.getElementById("theme-toggle").addEventListener("click", () => {
-    state.theme = state.theme === "light" ? "dark" : "light";
-    saveStateToStorage();
-    applyTheme(state.theme);
-  });
-  
   document.getElementById("pdf-btn").addEventListener("click", () => {
     alert("인쇄 대화상자가 열리면 대상(프린터)을 'PDF로 저장' 또는 'Microsoft Print to PDF'로 지정해 주세요.");
     window.print();

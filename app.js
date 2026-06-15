@@ -383,9 +383,6 @@ function renderAllPageSheets() {
         <button class="btn btn-xs btn-secondary edit-equip-btn" data-page-id="${page.id}">
           <i data-lucide="sliders" style="width: 12px; height: 12px;"></i> 기기 편집
         </button>
-        <button class="btn btn-xs btn-outline-danger clear-page-btn" data-page-id="${page.id}">
-          <i data-lucide="trash-2" style="width: 12px; height: 12px;"></i> 이번 달 초기화
-        </button>
         <button class="btn btn-xs btn-danger-outline delete-page-btn" data-page-id="${page.id}">
           <i data-lucide="x" style="width: 12px; height: 12px;"></i> 페이지 삭제
         </button>
@@ -438,7 +435,6 @@ function renderAllPageSheets() {
     });
 
     headerBar.querySelector(".edit-equip-btn").addEventListener("click", () => openEquipModal(page.id));
-    headerBar.querySelector(".clear-page-btn").addEventListener("click", () => clearPageMonthData(page.id));
     headerBar.querySelector(".delete-page-btn").addEventListener("click", () => deletePage(page.id));
 
     cardWrapper.appendChild(headerBar);
@@ -817,6 +813,28 @@ function clearPageMonthData(pageId) {
   }
 }
 
+// 모든 페이지의 이번 달 점검 데이터 초기화
+function clearAllPagesMonthData() {
+  if (confirm(`정말 모든 페이지의 이번 달(${state.year}년 ${state.month}월) 점검 데이터를 전부 초기화하시겠습니까?\n(기기명 목록은 유지됩니다)`)) {
+    if (!checkAdminAccess()) return;
+    
+    const monthKey = `${state.year}-${state.month}`;
+    if (state.checklistData[monthKey]) {
+      state.pages.forEach(page => {
+        state.checklistData[monthKey][page.id] = {};
+      });
+    }
+    
+    localStorage.setItem("medical_equip_state_scroll_v1", JSON.stringify(state));
+    if (isCloudMode && dbRef) {
+      dbRef.child(`checklistData/${monthKey}`).set({});
+    }
+    
+    renderAllPageSheets();
+    alert("모든 페이지의 이번 달 점검 데이터가 초기화되었습니다.");
+  }
+}
+
 // ==========================================================================
 // 6. 장비 편집 모달 제어 (15개 고정 입력)
 // ==========================================================================
@@ -1132,6 +1150,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("batch-fill-month-all-btn").addEventListener("click", fillMonthAllEquipAllV);
+
+  document.getElementById("batch-reset-month-btn").addEventListener("click", clearAllPagesMonthData);
 
   // 9. 상단 공통 동작 단추들
   document.getElementById("theme-toggle").addEventListener("click", () => {

@@ -997,19 +997,99 @@ function fillMonthAllEquipAllV() {
 // ==========================================================================
 
 function exportBackup() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
-  const downloadAnchor = document.createElement("a");
   const dateStr = new Date().toISOString().slice(0, 10);
+  const fileName = `의료기기점검대장_백업_${dateStr}.json`;
+  const jsonStr = JSON.stringify(state, null, 2);
   
+  // File System Access API 지원 시 저장 위치 선택 다이얼로그 제공
+  if (window.showSaveFilePicker) {
+    (async () => {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: "JSON 백업 파일",
+            accept: { "application/json": [".json"] }
+          }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(jsonStr);
+        await writable.close();
+        alert("백업 파일이 저장되었습니다.");
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("저장 실패:", err);
+          // 폴백: 기존 다운로드 방식
+          downloadBackupFallback(jsonStr, fileName);
+        }
+      }
+    })();
+  } else {
+    // 미지원 브라우저 폴백
+    downloadBackupFallback(jsonStr, fileName);
+  }
+}
+
+function downloadBackupFallback(jsonStr, fileName) {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
+  const downloadAnchor = document.createElement("a");
   downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", `의료기기점검대장_백업_${dateStr}.json`);
+  downloadAnchor.setAttribute("download", fileName);
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
 }
 
 function triggerImport() {
-  document.getElementById("import-file-input").click();
+  // File System Access API 지원 시 파일 선택 다이얼로그 (위치 탐색 가능)
+  if (window.showOpenFilePicker) {
+    (async () => {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{
+            description: "JSON 백업 파일",
+            accept: { "application/json": [".json"] }
+          }],
+          multiple: false
+        });
+        const file = await handle.getFile();
+        const text = await file.text();
+        processImportData(text);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("파일 열기 실패:", err);
+          // 폴백
+          document.getElementById("import-file-input").click();
+        }
+      }
+    })();
+  } else {
+    document.getElementById("import-file-input").click();
+  }
+}
+
+function processImportData(text) {
+  try {
+    const importedState = JSON.parse(text);
+    if (importedState.pages && importedState.checklistData) {
+      if (confirm("백업 데이터를 복원하시겠습니까? 기존 정보가 모두 덮어씌워집니다.")) {
+        state = { ...state, ...importedState };
+        
+        state.pages.forEach(page => {
+          page.equipment = sanitizeEquipmentList(page.equipment);
+        });
+        
+        saveStateToStorage();
+        initSelectors();
+        renderAllPageSheets();
+        alert("데이터 백업이 성공적으로 복원되었습니다.");
+      }
+    } else {
+      alert("유효한 백업 파일 형식이 아닙니다.");
+    }
+  } catch (err) {
+    alert("파일 복원 중 에러 발생: " + err.message);
+  }
 }
 
 function handleImportFile(e) {
@@ -1018,27 +1098,7 @@ function handleImportFile(e) {
   
   const reader = new FileReader();
   reader.onload = function(evt) {
-    try {
-      const importedState = JSON.parse(evt.target.result);
-      if (importedState.pages && importedState.checklistData) {
-        if (confirm("백업 데이터를 복원하시겠습니까? 기존 정보가 모두 덮어씌워집니다.")) {
-          state = { ...state, ...importedState };
-          
-          state.pages.forEach(page => {
-            page.equipment = sanitizeEquipmentList(page.equipment);
-          });
-          
-          saveStateToStorage();
-          initSelectors();
-          renderAllPageSheets();
-          alert("데이터 백업이 성공적으로 복원되었습니다.");
-        }
-      } else {
-        alert("유효한 백업 파일 형식이 아닙니다.");
-      }
-    } catch (err) {
-      alert("파일 복원 중 에러 발생: " + err.message);
-    }
+    processImportData(evt.target.result);
   };
   reader.readAsText(file);
   e.target.value = "";
@@ -1165,4 +1225,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.print();
   });
   document.getElementById("print-btn").addEventListener("click", () => window.print());
+
+  // 10. 백업 내보내기 / 가져오기
+  document.getElementById("export-btn").addEventListener("click", exportBackup);
+  document.getElementById("import-btn").addEventListener("click", triggerImport);
+  document.getElementById("import-file-input").addEventListener("change", handleImportFile);
 });

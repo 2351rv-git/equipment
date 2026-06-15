@@ -927,9 +927,48 @@ function fillEquipMonthAllV(equipIndex) {
   const daysInMonth = getDaysInMonth(state.year, state.month);
   const pageDisplayName = page.department || "구분 미설정";
   
-  if (confirm(`'${pageDisplayName}'의 '${displayName}' 기기 한 달 전체 결과를 '적합(V)'으로 입력하시겠습니까?`)) {
+  if (confirm(`'${pageDisplayName}'의 '${displayName}' 기기 한 달 전체 결과를 '적합(V)'으로 입력하시겠습니까?\n(공휴일은 '-'로 표시됩니다)`)) {
     for (let d = 1; d <= daysInMonth; d++) {
-      updateCellValue(targetPageId, equipIndex, d, "V");
+      const holidayName = getHolidayName(state.year, state.month, d);
+      const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+      const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+      
+      if (isHoliday) {
+        updateCellValue(targetPageId, equipIndex, d, "-");
+      } else {
+        updateCellValue(targetPageId, equipIndex, d, "V");
+      }
+    }
+  }
+}
+
+// 1달치 전체 체크: 선택된 페이지의 등록된 모든 기기에 대해 한 달 전체 V (공휴일은 - )
+function fillMonthAllEquipAllV() {
+  const targetPageId = document.getElementById("batch-page-select").value;
+  if (!targetPageId) {
+    alert("일괄 입력을 적용할 대상 페이지를 선택해 주세요.");
+    return;
+  }
+  
+  const page = state.pages.find(p => p.id === targetPageId);
+  const pageDisplayName = page.department || "구분 미설정";
+  const daysInMonth = getDaysInMonth(state.year, state.month);
+  
+  if (confirm(`'${pageDisplayName}'의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
+    for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
+      if (page.equipment[equipIndex] && page.equipment[equipIndex].trim()) {
+        for (let d = 1; d <= daysInMonth; d++) {
+          const holidayName = getHolidayName(state.year, state.month, d);
+          const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+          const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+          
+          if (isHoliday) {
+            updateCellValue(targetPageId, equipIndex, d, "-");
+          } else {
+            updateCellValue(targetPageId, equipIndex, d, "V");
+          }
+        }
+      }
     }
   }
 }
@@ -1090,6 +1129,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (equipVal !== "") fillEquipMonthAllV(parseInt(equipVal));
     else alert("일괄 입력할 기기를 선택해주세요.");
   });
+
+  document.getElementById("batch-fill-month-all-btn").addEventListener("click", fillMonthAllEquipAllV);
 
   // 9. 상단 공통 동작 단추들
   document.getElementById("theme-toggle").addEventListener("click", () => {

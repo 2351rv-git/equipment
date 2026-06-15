@@ -559,13 +559,17 @@ function renderAllPageSheets() {
           }
           
           const val = equipData[d] || "";
-          td.textContent = val;
           
-          if (val === "V") {
+          // 공휴일/주말(토,일)에 데이터가 없으면 기본적으로 "-" 표시
+          const holidayOrWeekend = isHolidayDay || dayOfWeek === 0 || dayOfWeek === 6;
+          const displayVal = (val === "" && holidayOrWeekend) ? "-" : val;
+          td.textContent = displayVal;
+          
+          if (displayVal === "V") {
             td.classList.add("val-v");
-          } else if (["①", "②", "③", "④", "⑤"].some(code => val.includes(code))) {
+          } else if (["①", "②", "③", "④", "⑤"].some(code => displayVal.includes(code))) {
             td.classList.add("val-error");
-          } else if (val !== "") {
+          } else if (displayVal !== "" && displayVal !== "-") {
             td.classList.add("val-custom");
           }
           
@@ -896,19 +900,22 @@ function fillTodayAllV() {
 function fillDayAllV(day) {
   if (!day) return;
   
-  const targetPageId = document.getElementById("batch-page-select").value;
-  if (!targetPageId) {
-    alert("일괄 입력을 적용할 대상 페이지를 선택해 주세요.");
-    return;
-  }
-  
-  const page = state.pages.find(p => p.id === targetPageId);
-  if (confirm(`'${page.name}'의 ${day}일의 모든 기기 결과를 '적합(V)'으로 입력하시겠습니까?`)) {
-    for (let index = 0; index < 15; index++) {
-      if (page.equipment[index] && page.equipment[index].trim()) {
-        updateCellValue(targetPageId, index, day, "V");
+  if (confirm(`모든 페이지의 ${day}일 등록 기기 결과를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
+    const holidayName = getHolidayName(state.year, state.month, day);
+    const dayOfWeek = getDayOfWeek(state.year, state.month, day);
+    const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+    
+    state.pages.forEach(page => {
+      for (let index = 0; index < 15; index++) {
+        if (page.equipment[index] && page.equipment[index].trim()) {
+          if (isHoliday) {
+            updateCellValue(page.id, index, day, "-");
+          } else {
+            updateCellValue(page.id, index, day, "V");
+          }
+        }
       }
-    }
+    });
   }
 }
 
@@ -942,34 +949,28 @@ function fillEquipMonthAllV(equipIndex) {
   }
 }
 
-// 1달치 전체 체크: 선택된 페이지의 등록된 모든 기기에 대해 한 달 전체 V (공휴일은 - )
+// 이번 달 모두 적합: 모든 페이지의 등록된 모든 기기에 대해 한 달 전체 V (공휴일은 - )
 function fillMonthAllEquipAllV() {
-  const targetPageId = document.getElementById("batch-page-select").value;
-  if (!targetPageId) {
-    alert("일괄 입력을 적용할 대상 페이지를 선택해 주세요.");
-    return;
-  }
-  
-  const page = state.pages.find(p => p.id === targetPageId);
-  const pageDisplayName = page.department || "구분 미설정";
   const daysInMonth = getDaysInMonth(state.year, state.month);
   
-  if (confirm(`'${pageDisplayName}'의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
-    for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
-      if (page.equipment[equipIndex] && page.equipment[equipIndex].trim()) {
-        for (let d = 1; d <= daysInMonth; d++) {
-          const holidayName = getHolidayName(state.year, state.month, d);
-          const dayOfWeek = getDayOfWeek(state.year, state.month, d);
-          const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
-          
-          if (isHoliday) {
-            updateCellValue(targetPageId, equipIndex, d, "-");
-          } else {
-            updateCellValue(targetPageId, equipIndex, d, "V");
+  if (confirm(`모든 페이지의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
+    state.pages.forEach(page => {
+      for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
+        if (page.equipment[equipIndex] && page.equipment[equipIndex].trim()) {
+          for (let d = 1; d <= daysInMonth; d++) {
+            const holidayName = getHolidayName(state.year, state.month, d);
+            const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+            const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+            
+            if (isHoliday) {
+              updateCellValue(page.id, equipIndex, d, "-");
+            } else {
+              updateCellValue(page.id, equipIndex, d, "V");
+            }
           }
         }
       }
-    }
+    });
   }
 }
 

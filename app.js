@@ -35,6 +35,7 @@ const DEFAULT_EQUIPMENT = [
 
 const DEFAULT_PAGE_ID = "page_default_1";
 const ADMIN_PASSWORD = "1234";
+let adminPassword = ADMIN_PASSWORD;
 
 // 애플리케이션 상태 (State)
 let state = {
@@ -82,12 +83,34 @@ function sanitizeEquipmentList(equipmentArray) {
 
 // 관리자 인증 팝업
 function checkAdminAccess() {
-  const input = prompt("관리자 비밀번호를 입력해주세요 (기본: 1234):");
-  if (input === ADMIN_PASSWORD) {
+  const input = prompt("관리자 비밀번호를 입력해주세요:");
+  if (input === adminPassword) {
     return true;
   }
   alert("비밀번호가 일치하지 않습니다. 관리자 권한이 필요합니다.");
   return false;
+}
+
+// 관리자 비밀번호 변경
+function changeAdminPassword() {
+  const current = prompt("현재 비밀번호를 입력해주세요:");
+  if (current !== adminPassword) {
+    alert("현재 비밀번호가 일치하지 않습니다.");
+    return;
+  }
+  const newPw = prompt("새 비밀번호를 입력해주세요:");
+  if (!newPw || newPw.trim() === "") {
+    alert("비밀번호는 비어 있을 수 없습니다.");
+    return;
+  }
+  const confirmPw = prompt("새 비밀번호를 다시 입력해주세요:");
+  if (newPw !== confirmPw) {
+    alert("새 비밀번호가 일치하지 않습니다.");
+    return;
+  }
+  adminPassword = newPw;
+  localStorage.setItem("medical_equip_admin_pw", adminPassword);
+  alert("관리자 비밀번호가 변경되었습니다.");
 }
 
 // ==========================================================================
@@ -1112,6 +1135,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. 동기화 방식 확인 및 리스너 가동 (클라우드 vs 로컬 포백)
   initStorageMode();
   
+  // 저장된 관리자 비밀번호 로드
+  const savedPw = localStorage.getItem("medical_equip_admin_pw");
+  if (savedPw) adminPassword = savedPw;
+  
   // 공휴일 API 데이터 비동기 로드
   fetchHolidays();
   
@@ -1219,6 +1246,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.print();
   });
   document.getElementById("print-btn").addEventListener("click", () => window.print());
+
+  // 설정 버튼 (관리자 비밀번호 변경)
+  document.getElementById("settings-btn").addEventListener("click", changeAdminPassword);
 
   // 10. 백업 내보내기 / 가져오기
   document.getElementById("export-btn").addEventListener("click", exportBackup);

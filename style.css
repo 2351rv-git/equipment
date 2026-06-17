@@ -217,9 +217,9 @@ body {
 }
 
 .btn-xs {
-  padding: 5px 10px;
-  font-size: 0.73rem;
-  border-radius: 4px;
+  padding: 7px 14px;
+  font-size: 0.78rem;
+  border-radius: 5px;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -369,9 +369,9 @@ body {
 }
 
 .select-xs {
-  padding: 4px 6px;
-  font-size: 0.73rem;
-  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  border-radius: 5px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-primary);
   color: var(--text-primary);

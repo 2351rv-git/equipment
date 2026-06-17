@@ -217,9 +217,11 @@ body {
 }
 
 .btn-xs {
-  padding: 6px 12px;
-  font-size: 0.75rem;
+  padding: 5px 10px;
+  font-size: 0.73rem;
   border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .btn-outline-primary {
@@ -328,14 +330,19 @@ body {
   gap: 8px;
   padding-top: 16px;
   border-top: 1px solid var(--border-color);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  width: 100%;
 }
 
 .batch-tools-left {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .batch-title {
@@ -357,16 +364,18 @@ body {
   width: 1px;
   height: 20px;
   background-color: var(--border-color);
-  margin: 0 4px;
+  margin: 0 2px;
+  flex-shrink: 0;
 }
 
 .select-xs {
-  padding: 4px 8px;
-  font-size: 0.75rem;
+  padding: 4px 6px;
+  font-size: 0.73rem;
   border-radius: 4px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 /* ==========================================================================

@@ -956,13 +956,13 @@ body {
    * A4 가로(Landscape): 297mm × 210mm
    * 여백 10mm 상하좌우 → 사용 가능 영역: 277mm × 190mm
    * 
-   * 높이 배분 (190mm):
+   * 높이 배분 (183mm, 7mm 여유):
    * - 제목 + 담당자: 12mm
-   * - 안내 테이블 (3행): 14mm
+   * - 안내 테이블 (3행 × 4.0mm): 12mm
    * - 체크리스트 (헤더2행 + 데이터20행 = 22행 × 6.2mm): 136mm
-   * - 서명란: 18mm
-   * - 여유 간격: 10mm
-   * 합계: ~190mm
+   * - 서명란: 15mm (높이 13mm)
+   * - 간격: 8mm
+   * 합계: 183mm
    */
   @page {
     size: A4 landscape;
@@ -1043,7 +1043,7 @@ body {
     margin-bottom: 1mm !important;
   }
 
-  /* 안내 테이블: ~14mm (3행 × ~4.5mm) */
+  /* 안내 테이블: ~12mm (3행 × 4.0mm) */
   .instructions-wrapper {
     margin-bottom: 1mm !important;
   }
@@ -1058,8 +1058,8 @@ body {
   
   .instructions-table td {
     border: 1px solid #000000 !important;
-    padding: 1mm 2mm !important;
-    height: 4.5mm !important;
+    padding: 0.5mm 2mm !important;
+    height: 4mm !important;
     line-height: 1.2 !important;
   }
 
@@ -1111,7 +1111,7 @@ body {
     color: #000000 !important;
   }
 
-  /* 서명란: ~18mm */
+  /* 서명란: ~15mm */
   .register-footer {
     margin-top: 2mm !important;
   }

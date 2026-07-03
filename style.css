@@ -1123,11 +1123,11 @@ body {
   .signature-box td {
     border: 1px solid #000000 !important;
     width: 22mm !important;
-    height: 16mm !important;
+    height: 13mm !important;
   }
 
   .sig-space {
-    height: 12mm !important;
+    height: 9mm !important;
   }
 
   .sig-label {

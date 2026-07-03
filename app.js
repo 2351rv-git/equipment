@@ -75,10 +75,10 @@ let activeModalPageId = null;
 // 장비 목록 배열이 항상 정확히 15개의 요소(빈 문자열 포함)를 가지도록 보장하는 헬퍼
 function sanitizeEquipmentList(equipmentArray) {
   const arr = [...(equipmentArray || [])];
-  while (arr.length < 20) {
+  while (arr.length < 15) {
     arr.push("");
   }
-  return arr.slice(0, 20);
+  return arr.slice(0, 15);
 }
 
 // 관리자 인증 팝업
@@ -504,7 +504,19 @@ function renderAllPageSheets() {
     let dayColsHtml = "";
     for (let d = 1; d <= 31; d++) {
       if (d <= daysInMonth) {
-        dayColsHtml += `<th class="day-col">${d}</th>`;
+        const holidayName = getHolidayName(state.year, state.month, d);
+        const isHolidayDay = holidayName !== "";
+        const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+        let weekendClass = "";
+        let titleAttr = "";
+        
+        if (isHolidayDay || dayOfWeek === 0) {
+          weekendClass = " sunday"; // 공휴일 및 일요일 빨간색
+          if (isHolidayDay) titleAttr = ` title="${holidayName}"`;
+        } else if (dayOfWeek === 6) {
+          weekendClass = " saturday"; // 토요일 파란색
+        }
+        dayColsHtml += `<th class="day-col${weekendClass}"${titleAttr}>${d}</th>`;
       } else {
         dayColsHtml += `<th style="background-color: #e2e8f0; color: #94a3b8;">-</th>`;
       }
@@ -530,7 +542,7 @@ function renderAllPageSheets() {
     const tbody = document.createElement("tbody");
     const pageData = currentMonthData[page.id] || {};
     
-    for (let equipIndex = 0; equipIndex < 20; equipIndex++) {
+    for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
       const equipName = pageEquipments[equipIndex] || "";
       const tr = document.createElement("tr");
       
@@ -713,6 +725,10 @@ function updateCellValue(pageId, equipIndex, day, val) {
         cell.textContent = val;
         cell.className = "check-cell"; 
         
+        const dayOfWeek = getDayOfWeek(state.year, state.month, day);
+        if (dayOfWeek === 6) cell.classList.add("cell-weekend-sat");
+        if (dayOfWeek === 0) cell.classList.add("cell-weekend-sun");
+        
         if (val === "V") {
           cell.classList.add("val-v");
         } else if (["①", "②", "③", "④", "⑤"].some(code => val.includes(code))) {
@@ -854,7 +870,7 @@ function renderEquipInputsInModal() {
   const page = state.pages.find(p => p.id === activeModalPageId);
   const equipment = sanitizeEquipmentList(page.equipment);
   
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 15; i++) {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("equip-input-item");
     

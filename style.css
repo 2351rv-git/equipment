@@ -994,7 +994,12 @@ body {
     margin: 0 !important;
     background-color: #ffffff !important;
     page-break-after: always;
-    height: 100%;
+    page-break-inside: avoid;
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .page-card-wrapper:last-child {
@@ -1006,18 +1011,22 @@ body {
     padding: 0 2px !important;
     box-sizing: border-box !important;
     background-color: #ffffff !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
   }
 
   .register-title {
-    font-size: 20pt !important;
-    margin-bottom: 5px !important;
+    font-size: 16pt !important;
+    margin-bottom: 3px !important;
   }
 
   .inspector-line {
     text-align: right !important;
-    font-size: 9pt !important;
-    margin-top: 3px !important;
-    margin-bottom: 6px !important;
+    font-size: 8pt !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
   }
 
   /* 3-row instructions table print rules */
@@ -1026,13 +1035,13 @@ body {
     border: 1.5px solid #000000 !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
-    font-size: 7pt !important;
+    font-size: 6.5pt !important;
   }
   
   .instructions-table td {
     border: 1px solid #000000 !important;
-    padding: 3px 6px !important;
-    height: 20px !important;
+    padding: 2px 4px !important;
+    height: 16px !important;
   }
 
   .instructions-table .inst-label {
@@ -1047,30 +1056,31 @@ body {
     border: 1px solid #000000 !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
-    font-size: 7pt !important;
+    font-size: 6.5pt !important;
   }
 
   .grid-table-container {
     overflow: visible !important;
+    flex: 1;
   }
 
   .checklist-table th, 
   .checklist-table td {
     border: 1px solid #000000 !important;
-    padding: 3px 2px !important;
+    padding: 2px 1px !important;
     word-break: break-all !important;
     white-space: normal !important;
   }
 
   .checklist-table th {
-    height: 18px !important;
+    height: 16px !important;
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .checklist-table td {
-    height: 20px !important;
+    height: 18px !important;
   }
 
   /* Reset weekend colors for clean printing if they don't support color */
@@ -1097,7 +1107,7 @@ body {
 
   /* Signatures block positioning */
   .register-footer {
-    margin-top: 8px !important;
+    margin-top: 4px !important;
   }
 
   /* Page indicators hidden in print */
@@ -1107,16 +1117,16 @@ body {
 
   .signature-box td {
     border: 1px solid #000000 !important;
-    width: 100px !important;
-    height: 76px !important;
+    width: 80px !important;
+    height: 50px !important;
   }
 
   .sig-space {
-    height: 60px !important;
+    height: 38px !important;
   }
 
   .sig-label {
-    font-size: 6.5pt !important;
+    font-size: 6pt !important;
     padding: 1px 0 !important;
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;

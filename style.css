@@ -958,9 +958,9 @@ body {
    * 
    * 높이 배분 (183mm, 7mm 여유):
    * - 제목 + 담당자: 12mm
-   * - 안내 테이블 (3행 × 4.0mm): 12mm
-   * - 체크리스트 (헤더2행 + 데이터20행 = 22행 × 6.2mm): 136mm
-   * - 서명란: 15mm (높이 13mm)
+   * - 안내 테이블: 12mm
+   * - 체크리스트 (22행 × 6mm): 132mm
+   * - 서명란: 14mm
    * - 간격: 8mm
    * 합계: 183mm
    */
@@ -1100,7 +1100,7 @@ body {
   }
 
   .checklist-table td {
-    height: 6.2mm !important;
+    height: 6mm !important;
   }
 
   .check-cell.val-v {
@@ -1111,7 +1111,7 @@ body {
     color: #000000 !important;
   }
 
-  /* 서명란: ~15mm */
+  /* 서명란: ~14mm */
   .register-footer {
     margin-top: 2mm !important;
   }
@@ -1123,11 +1123,11 @@ body {
   .signature-box td {
     border: 1px solid #000000 !important;
     width: 22mm !important;
-    height: 13mm !important;
+    height: 12mm !important;
   }
 
   .sig-space {
-    height: 9mm !important;
+    height: 8mm !important;
   }
 
   .sig-label {

@@ -566,14 +566,29 @@ function renderAllPageSheets() {
           td.dataset.equipIndex = equipIndex;
           td.dataset.day = d;
           
-          const val = equipData[d] || "";
-          td.textContent = val;
+          const holidayName = getHolidayName(state.year, state.month, d);
+          const isHolidayDay = holidayName !== "";
+          const dayOfWeek = getDayOfWeek(state.year, state.month, d);
           
-          if (val === "V") {
+          if (isHolidayDay || dayOfWeek === 0) {
+            td.classList.add("cell-weekend-sun"); // 공휴일 및 일요일 빨간색 배경
+            if (isHolidayDay) td.title = holidayName; // 마우스 오버 시 공휴일 명칭 표시
+          } else if (dayOfWeek === 6) {
+            td.classList.add("cell-weekend-sat"); // 토요일 파란색 배경
+          }
+          
+          const val = equipData[d] || "";
+          
+          // 공휴일/주말(토,일)에 데이터가 없으면 기본적으로 "-" 표시
+          const holidayOrWeekend = isHolidayDay || dayOfWeek === 0 || dayOfWeek === 6;
+          const displayVal = (val === "" && holidayOrWeekend) ? "-" : val;
+          td.textContent = displayVal;
+          
+          if (displayVal === "V") {
             td.classList.add("val-v");
-          } else if (["①", "②", "③", "④", "⑤"].some(code => val.includes(code))) {
+          } else if (["①", "②", "③", "④", "⑤"].some(code => displayVal.includes(code))) {
             td.classList.add("val-error");
-          } else if (val !== "") {
+          } else if (displayVal !== "" && displayVal !== "-") {
             td.classList.add("val-custom");
           }
           
@@ -926,11 +941,19 @@ function fillTodayAllV() {
 function fillDayAllV(day) {
   if (!day) return;
   
-  if (confirm(`모든 페이지의 ${day}일 등록 기기 결과를 '적합(V)'으로 입력하시겠습니까?`)) {
+  if (confirm(`모든 페이지의 ${day}일 등록 기기 결과를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
+    const holidayName = getHolidayName(state.year, state.month, day);
+    const dayOfWeek = getDayOfWeek(state.year, state.month, day);
+    const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+    
     state.pages.forEach(page => {
-      for (let index = 0; index < 20; index++) {
+      for (let index = 0; index < 15; index++) {
         if (page.equipment[index] && page.equipment[index].trim()) {
-          updateCellValue(page.id, index, day, "V");
+          if (isHoliday) {
+            updateCellValue(page.id, index, day, "-");
+          } else {
+            updateCellValue(page.id, index, day, "V");
+          }
         }
       }
     });
@@ -952,23 +975,39 @@ function fillEquipMonthAllV(equipIndex) {
   const daysInMonth = getDaysInMonth(state.year, state.month);
   const pageDisplayName = page.department || "구분 미설정";
   
-  if (confirm(`'${pageDisplayName}'의 '${displayName}' 기기 한 달 전체 결과를 '적합(V)'으로 입력하시겠습니까?`)) {
+  if (confirm(`'${pageDisplayName}'의 '${displayName}' 기기 한 달 전체 결과를 '적합(V)'으로 입력하시겠습니까?\n(공휴일은 '-'로 표시됩니다)`)) {
     for (let d = 1; d <= daysInMonth; d++) {
-      updateCellValue(targetPageId, equipIndex, d, "V");
+      const holidayName = getHolidayName(state.year, state.month, d);
+      const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+      const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+      
+      if (isHoliday) {
+        updateCellValue(targetPageId, equipIndex, d, "-");
+      } else {
+        updateCellValue(targetPageId, equipIndex, d, "V");
+      }
     }
   }
 }
 
-// 이번 달 모두 적합: 모든 페이지의 등록된 모든 기기에 대해 한 달 전체 V
+// 이번 달 모두 적합: 모든 페이지의 등록된 모든 기기에 대해 한 달 전체 V (공휴일은 - )
 function fillMonthAllEquipAllV() {
   const daysInMonth = getDaysInMonth(state.year, state.month);
   
-  if (confirm(`모든 페이지의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?`)) {
+  if (confirm(`모든 페이지의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?\n(공휴일/주말은 '-'로 표시됩니다)`)) {
     state.pages.forEach(page => {
-      for (let equipIndex = 0; equipIndex < 20; equipIndex++) {
+      for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
         if (page.equipment[equipIndex] && page.equipment[equipIndex].trim()) {
           for (let d = 1; d <= daysInMonth; d++) {
-            updateCellValue(page.id, equipIndex, d, "V");
+            const holidayName = getHolidayName(state.year, state.month, d);
+            const dayOfWeek = getDayOfWeek(state.year, state.month, d);
+            const isHoliday = holidayName !== "" || dayOfWeek === 0 || dayOfWeek === 6;
+            
+            if (isHoliday) {
+              updateCellValue(page.id, equipIndex, d, "-");
+            } else {
+              updateCellValue(page.id, equipIndex, d, "V");
+            }
           }
         }
       }

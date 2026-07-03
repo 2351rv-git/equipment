@@ -1008,10 +1008,13 @@ body {
     background-color: #ffffff !important;
     page-break-after: always;
     page-break-inside: avoid;
+    break-after: page;
+    break-inside: avoid;
   }
 
   .page-card-wrapper:last-child {
     page-break-after: avoid;
+    break-after: auto;
   }
 
   .printable-register {
@@ -1019,6 +1022,8 @@ body {
     padding: 0 !important;
     box-sizing: border-box !important;
     background-color: #ffffff !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   /* 제목 영역: ~12mm */
@@ -1069,10 +1074,12 @@ body {
     print-color-adjust: exact;
   }
 
-  /* 체크리스트 테이블: 22행 × 6.2mm = ~136mm */
+  /* 체크리스트 테이블: 22행 × 6mm = 132mm */
   .grid-table-container {
     overflow: visible !important;
     margin-bottom: 1mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .checklist-table {
@@ -1081,6 +1088,8 @@ body {
     border-collapse: collapse !important;
     table-layout: fixed !important;
     font-size: 7pt !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .checklist-table th, 
@@ -1114,6 +1123,8 @@ body {
   /* 서명란: ~14mm */
   .register-footer {
     margin-top: 2mm !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .signature-box {

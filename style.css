@@ -954,8 +954,8 @@ body {
 @media print {
   /* Set A4 Landscape dimensions and clean margins */
   @page {
-    size: A4 landscape;
-    margin: 8mm 10mm;
+    size: landscape;
+    margin: 5mm 8mm;
   }
   
   body {
@@ -963,12 +963,15 @@ body {
     color: #000000 !important;
     padding: 0 !important;
     margin: 0 !important;
-    font-size: 8pt !important;
+    font-size: 7pt !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .app-container {
     max-width: 100% !important;
     gap: 0 !important;
+    padding: 0 !important;
   }
 
   /* Hide screen UI elements */
@@ -995,53 +998,60 @@ body {
     background-color: #ffffff !important;
     page-break-after: always;
     page-break-inside: avoid;
-    height: 100vh;
-    max-height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    break-after: page;
+    break-inside: avoid;
   }
 
   .page-card-wrapper:last-child {
     page-break-after: avoid;
+    break-after: auto;
   }
 
   .printable-register {
     width: 100% !important;
-    padding: 0 2px !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     background-color: #ffffff !important;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
+  }
+
+  .register-header {
+    margin-bottom: 2px !important;
   }
 
   .register-title {
-    font-size: 16pt !important;
-    margin-bottom: 3px !important;
+    font-size: 14pt !important;
+    margin-bottom: 1px !important;
+  }
+
+  .dept-parenthesis {
+    font-size: 11pt !important;
   }
 
   .inspector-line {
     text-align: right !important;
     font-size: 8pt !important;
-    margin-top: 2px !important;
-    margin-bottom: 4px !important;
+    margin-top: 1px !important;
+    margin-bottom: 2px !important;
   }
 
   /* 3-row instructions table print rules */
+  .instructions-wrapper {
+    margin-bottom: 2px !important;
+  }
+
   .instructions-table {
     width: 100% !important;
-    border: 1.5px solid #000000 !important;
+    border: 1px solid #000000 !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
-    font-size: 6.5pt !important;
+    font-size: 6pt !important;
   }
   
   .instructions-table td {
     border: 1px solid #000000 !important;
-    padding: 2px 4px !important;
-    height: 16px !important;
+    padding: 1px 4px !important;
+    height: auto !important;
+    line-height: 1.3 !important;
   }
 
   .instructions-table .inst-label {
@@ -1051,6 +1061,10 @@ body {
   }
 
   /* Grid table print rules */
+  .grid-table-container {
+    overflow: visible !important;
+  }
+
   .checklist-table {
     width: 100% !important;
     border: 1px solid #000000 !important;
@@ -1059,41 +1073,28 @@ body {
     font-size: 6.5pt !important;
   }
 
-  .grid-table-container {
-    overflow: visible !important;
-    flex: 1;
-  }
-
   .checklist-table th, 
   .checklist-table td {
     border: 1px solid #000000 !important;
-    padding: 2px 1px !important;
+    padding: 1px 1px !important;
     word-break: break-all !important;
     white-space: normal !important;
+    line-height: 1.2 !important;
   }
 
   .checklist-table th {
-    height: 16px !important;
+    height: 14px !important;
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .checklist-table td {
-    height: 18px !important;
+    height: 15px !important;
   }
 
-  /* Reset weekend colors for clean printing if they don't support color */
-  .day-col.saturday,
-  .day-col.sunday {
-    background-color: #f8fafc !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  .check-cell.cell-weekend-sat,
-  .check-cell.cell-weekend-sun {
-    background-color: transparent !important;
+  .checklist-table thead tr:first-child th {
+    height: 16px !important;
   }
 
   .check-cell.val-v {
@@ -1107,22 +1108,21 @@ body {
 
   /* Signatures block positioning */
   .register-footer {
-    margin-top: 4px !important;
+    margin-top: 3px !important;
   }
 
-  /* Page indicators hidden in print */
-  .page-indicator-footer {
-    display: none !important;
+  .signature-box {
+    border-collapse: collapse !important;
   }
 
   .signature-box td {
     border: 1px solid #000000 !important;
-    width: 80px !important;
-    height: 50px !important;
+    width: 70px !important;
+    height: 35px !important;
   }
 
   .sig-space {
-    height: 38px !important;
+    height: 24px !important;
   }
 
   .sig-label {
@@ -1131,6 +1131,11 @@ body {
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Page indicators hidden in print */
+  .page-indicator-footer {
+    display: none !important;
   }
 }
 

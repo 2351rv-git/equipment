@@ -569,13 +569,13 @@ body {
 }
 
 .checklist-table th {
-  height: 28px;
+  height: 24px;
   background-color: #f1f5f9;
   font-weight: bold;
 }
 
 .checklist-table td {
-  height: 34px;
+  height: 28px;
 }
 
 .col-no {
@@ -1063,14 +1063,14 @@ body {
   }
 
   .checklist-table th {
-    height: 22px !important;
+    height: 18px !important;
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
   .checklist-table td {
-    height: 26px !important;
+    height: 20px !important;
   }
 
   /* Reset weekend colors for clean printing if they don't support color */

@@ -14,7 +14,7 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
-// 기본 의료기기 15개 목록
+// 기본 의료기기 20개 목록
 const DEFAULT_EQUIPMENT = [
   "환자감시모니터 (Patient Monitor)",
   "인공호흡기 (Ventilator)",
@@ -30,7 +30,12 @@ const DEFAULT_EQUIPMENT = [
   "이동형 X-Ray (Mobile X-Ray)",
   "혈압계 (BP Monitor)",
   "체온계 (Thermometer)",
-  "황달측정기 (Bilirubin Meter)"
+  "황달측정기 (Bilirubin Meter)",
+  "심폐소생술기 (CPR Machine)",
+  "산소공급기 (Oxygen Concentrator)",
+  "혈당측정기 (Glucometer)",
+  "무영등 (Surgical Light)",
+  "전동침대 (Electric Bed)"
 ];
 
 const DEFAULT_PAGE_ID = "page_default_1";
@@ -72,13 +77,13 @@ let activeCell = {
 // 현재 기기 편집 창(모달)에서 열고 있는 대상 페이지 ID
 let activeModalPageId = null;
 
-// 장비 목록 배열이 항상 정확히 15개의 요소(빈 문자열 포함)를 가지도록 보장하는 헬퍼
+// 장비 목록 배열이 항상 정확히 20개의 요소(빈 문자열 포함)를 가지도록 보장하는 헬퍼
 function sanitizeEquipmentList(equipmentArray) {
   const arr = [...(equipmentArray || [])];
-  while (arr.length < 15) {
+  while (arr.length < 20) {
     arr.push("");
   }
-  return arr.slice(0, 15);
+  return arr.slice(0, 20);
 }
 
 // 관리자 인증 팝업
@@ -161,7 +166,7 @@ function initFirebaseListeners() {
       state.pages = data.pages || state.pages;
       state.checklistData = data.checklistData || {};
       
-      // 15칸 데이터 안전 보정
+      // 20칸 데이터 안전 보정
       state.pages.forEach(page => {
         page.equipment = sanitizeEquipmentList(page.equipment);
         if (page.department === undefined) page.department = "";
@@ -534,7 +539,7 @@ function renderAllPageSheets() {
     const tbody = document.createElement("tbody");
     const pageData = currentMonthData[page.id] || {};
     
-    for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
+    for (let equipIndex = 0; equipIndex < 20; equipIndex++) {
       const equipName = pageEquipments[equipIndex] || "";
       const tr = document.createElement("tr");
       
@@ -836,7 +841,7 @@ function clearAllPagesMonthData() {
 }
 
 // ==========================================================================
-// 6. 장비 편집 모달 제어 (15개 고정 입력)
+// 6. 장비 편집 모달 제어 (20개 고정 입력)
 // ==========================================================================
 
 function openEquipModal(pageId) {
@@ -862,7 +867,7 @@ function renderEquipInputsInModal() {
   const page = state.pages.find(p => p.id === activeModalPageId);
   const equipment = sanitizeEquipmentList(page.equipment);
   
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 20; i++) {
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("equip-input-item");
     
@@ -920,7 +925,7 @@ function fillDayAllV(day) {
   
   if (confirm(`모든 페이지의 ${day}일 등록 기기 결과를 '적합(V)'으로 입력하시겠습니까?`)) {
     state.pages.forEach(page => {
-      for (let index = 0; index < 15; index++) {
+      for (let index = 0; index < 20; index++) {
         if (page.equipment[index] && page.equipment[index].trim()) {
           updateCellValue(page.id, index, day, "V");
         }
@@ -963,7 +968,7 @@ function fillMonthAllEquipAllV() {
   
   if (confirm(`모든 페이지의 등록된 모든 기기에 대해\n${state.year}년 ${state.month}월 전체를 '적합(V)'으로 입력하시겠습니까?\n(토요일/일요일/공휴일은 제외됩니다)`)) {
     state.pages.forEach(page => {
-      for (let equipIndex = 0; equipIndex < 15; equipIndex++) {
+      for (let equipIndex = 0; equipIndex < 20; equipIndex++) {
         if (page.equipment[equipIndex] && page.equipment[equipIndex].trim()) {
           for (let d = 1; d <= daysInMonth; d++) {
             const holidayName = getHolidayName(state.year, state.month, d);

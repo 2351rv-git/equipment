@@ -1070,7 +1070,7 @@ body {
   }
 
   .checklist-table td {
-    height: 19px !important;
+    height: 20px !important;
   }
 
   /* Reset weekend colors for clean printing if they don't support color */
@@ -1112,12 +1112,13 @@ body {
   }
 
   .sig-space {
-    height: 84px !important;
+    height: 75px !important;
   }
 
   .sig-label {
     font-size: 6pt !important;
     padding: 1px 0 !important;
+    height: 30px !important;
     background-color: #f1f5f9 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

@@ -1032,7 +1032,7 @@ body {
   .instructions-table td {
     border: 1px solid #000000 !important;
     padding: 1px 4px !important;
-    height: 14px !important;
+    height: 21px !important;
   }
 
   .instructions-table .inst-label {
@@ -1070,7 +1070,7 @@ body {
   }
 
   .checklist-table td {
-    height: 17px !important;
+    height: 23px !important;
   }
 
   /* Reset weekend colors for clean printing if they don't support color */
@@ -1107,12 +1107,12 @@ body {
 
   .signature-box td {
     border: 1px solid #000000 !important;
-    width: 70px !important;
-    height: 50px !important;
+    width: 105px !important;
+    height: 105px !important;
   }
 
   .sig-space {
-    height: 36px !important;
+    height: 84px !important;
   }
 
   .sig-label {

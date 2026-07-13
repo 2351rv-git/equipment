@@ -1070,7 +1070,7 @@ body {
   }
 
   .checklist-table td {
-    height: 23px !important;
+    height: 21px !important;
   }
 
   /* Reset weekend colors for clean printing if they don't support color */
